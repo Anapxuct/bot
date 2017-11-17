@@ -2,9 +2,15 @@ import time
 from commands_for_bot import *
 
 
-commands = {'привет': say_hello, 'вероятность': chance, 'send': send,
-            'кто': who_is, 'погода': current_weather,
-            'прогноз': weather_forecast, 'выбор': chose, 'помощь': send_help}
+commands = {'привет': say_hello,
+            'вероятность': chance,
+            'send': send,
+            'кто': who_is,
+            'погода': current_weather,
+            'прогноз': weather_forecast,
+            'выбор': chose,
+            'помощь': send_help,
+            'когда': when_it_happend}
 
 while True:
     response = vk.get_msgs()
