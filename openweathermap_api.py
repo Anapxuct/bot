@@ -2,11 +2,13 @@ import requests
 import pickle
 from yandex_api import translate_text
 
-# app_id =  тут должен быть ключ
+app_id = "88063fe5009f859f9523718cf06d539e"
 
 
 def get_city_id(name_of_city):
-    """ Получение id города, если он не был получен ранее """
+    """
+    Получение id города, если он не был получен ранее .
+    """
     with open('cities for weather', 'rb') as f:
         cities = pickle.load(f)
     if name_of_city in cities:
@@ -32,7 +34,9 @@ def get_city_id(name_of_city):
 
 
 def get_weather_of_city(name_of_city):
-    """ Возвращает погодные условия и температуру в городе в данный момент"""
+    """
+    Возвращает погодные условия и температуру в городе в данный момент.
+    """
     city_id = get_city_id(name_of_city)
     try:
         res = requests.get("http://api.openweathermap.org/data/2.5/weather",
@@ -50,7 +54,9 @@ def get_weather_of_city(name_of_city):
 
 
 def get_weather_forecast(name_of_city, days):
-    """ Возвращает прогноз погоды на days дней с интервалом в 3 часа"""
+    """
+    Возвращает прогноз погоды на days дней с интервалом в 3 часа.
+    """
     city_id = get_city_id(name_of_city)
     try:
         res = requests.get("http://api.openweathermap.org/data/2.5/forecast",

@@ -2,11 +2,14 @@ from re import search
 import random
 import vk_api_methods as vk
 import openweathermap_api as weather_api
+import wa_api
 import datetime
 
 
 def when_it_happend(item):
-    """Сказать, когда произойдет событие"""
+    """
+    Сказать, когда произойдет событие.
+    """
     today_date = datetime.date.today()
     random_date = today_date + datetime.timedelta(random.randint(1, 20 * 365))
     msg = item['body'][item['body'].index('когда') + 5:].lstrip() + ' ' \
@@ -15,12 +18,16 @@ def when_it_happend(item):
 
 
 def say_hello(item):
-    """Сказать привет"""
+    """
+    Сказать привет.
+    """
     vk.write_msg_in_chat(item['chat_id'], item['user_id'], 'Привет!')
 
 
 def chance(item):
-    """Написать вероятность события"""
+    """
+    Написать вероятность события.
+    """
     msg = 'Вероятность того, что ' \
           + item['body'][item['body'].index('вероят') + 11:].lstrip() + ' ' \
           + str(random.randint(1, 100)) + '%'
@@ -28,12 +35,16 @@ def chance(item):
 
 
 def send(item):
-    """Написать что-то в чат"""
+    """
+    Написать что-то в чат.
+    """
     vk.send_msg(item['chat_id'], item['user_id'], item['body'])
 
 
 def who_is(item):
-    """Выбрать пользователя из списка участников группы"""
+    """
+    Выбрать пользователя из списка участников группы.
+    """
     if item['chat_id'] == 0:
         vk.write_msg_in_chat(item['chat_id'], item['user_id'],
                              'Эта функция доступна только в беседах.')
@@ -46,7 +57,9 @@ def who_is(item):
 
 
 def current_weather(item):
-    """Написать текущую погоду в городе"""
+    """
+    Написать текущую погоду в городе.
+    """
     pattern_with_country = r' погода \w+,\w+'
     pattern_without_country = r' погода \w+'
 
@@ -61,7 +74,9 @@ def current_weather(item):
 
 
 def weather_forecast(item):
-    """Написать прогноз погоды на несколько дней"""
+    """
+    Написать прогноз погоды на несколько дней.
+    """
     pattern_with_country = r' прогноз \w+,\w+ на \d\s*$'
     pattern_without_country = r' прогноз \w+ на \d\s*$'
 
@@ -89,10 +104,46 @@ def weather_forecast(item):
 
 
 def chose(item):
-    """Выбрать из нескольких вариантов"""
+    """
+    Выбрать из нескольких вариантов.
+    """
     vk.choice(item['chat_id'], item['user_id'], item['body'])
 
 
 def send_help(item):
-    """Отправить справку в чат"""
+    """
+    Отправить справку в чат.
+    """
     vk.send_ref(item['chat_id'], item['user_id'])
+
+
+def wolfram_img_ans(item):
+    """Отправить фотографию ответа из вольфрамальфа"""
+    question = item['body'][item['body'].index('вольфрам')+8:].lstrip()
+    wa_api.get_img_answer(question)
+    vk.send_photo(item['chat_id'], item['user_id'], 'img.jpg')
+
+
+def translit(item):
+    """
+    Сменить раскладку сообщения.
+    """
+    mes = "Бот Котя: "
+    alf = "qйwцeуrкtеyнuгiшoщpз[х]ъaфsыdвfаgпhрjоkлlд;ж'эzяxчcсvмbиnтmь,б.ю"
+
+    for ch in item['body'][item['body'].index('транслит')+8:]:
+        if ch.lower() in alf:
+            if alf.index(ch.lower()) % 2 == 0:
+                if ch.isupper():
+                    mes += alf[alf.index(ch.lower()) + 1].upper()
+                else:
+                    mes += alf[alf.index(ch.lower()) + 1]
+            else:
+                if ch.isupper():
+                    mes += alf[alf.index(ch.lower()) - 1].upper()
+                else:
+                    mes += alf[alf.index(ch.lower()) - 1]
+        else:
+            mes += ch
+
+    vk.write_msg_in_chat(item['chat_id'], item['user_id'], mes)
