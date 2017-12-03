@@ -2,7 +2,7 @@ import requests
 import pickle
 from yandex_api import translate_text
 
-app_id = "88063fe5009f859f9523718cf06d539e"
+# app_id = тут должен быть ключ
 
 
 def get_city_id(name_of_city):
