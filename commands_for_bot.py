@@ -4,11 +4,13 @@ import vk_api_methods as vk
 import openweathermap_api as weather_api
 import wa_api
 import datetime
+import voicerss_api as voice
 
 
 def when_it_happend(item):
     """
     Сказать, когда произойдет событие.
+    :param item: сообщение с командой
     """
     today_date = datetime.date.today()
     random_date = today_date + datetime.timedelta(random.randint(1, 20 * 365))
@@ -20,6 +22,7 @@ def when_it_happend(item):
 def say_hello(item):
     """
     Сказать привет.
+    :param item: сообщение с командой
     """
     vk.write_msg_in_chat(item['chat_id'], item['user_id'], 'Привет!')
 
@@ -27,6 +30,7 @@ def say_hello(item):
 def chance(item):
     """
     Написать вероятность события.
+    :param item: сообщение с командой
     """
     msg = 'Вероятность того, что ' \
           + item['body'][item['body'].index('вероят') + 11:].lstrip() + ' ' \
@@ -37,6 +41,7 @@ def chance(item):
 def send(item):
     """
     Написать что-то в чат.
+    :param item: сообщение с командой
     """
     vk.send_msg(item['chat_id'], item['user_id'], item['body'])
 
@@ -44,6 +49,7 @@ def send(item):
 def who_is(item):
     """
     Выбрать пользователя из списка участников группы.
+    :param item: сообщение с командой
     """
     if item['chat_id'] == 0:
         vk.write_msg_in_chat(item['chat_id'], item['user_id'],
@@ -59,6 +65,7 @@ def who_is(item):
 def current_weather(item):
     """
     Написать текущую погоду в городе.
+    :param item: сообщение с командой
     """
     pattern_with_country = r' погода \w+,\w+'
     pattern_without_country = r' погода \w+'
@@ -76,6 +83,7 @@ def current_weather(item):
 def weather_forecast(item):
     """
     Написать прогноз погоды на несколько дней.
+    :param item: сообщение с командой
     """
     pattern_with_country = r' прогноз \w+,\w+ на \d\s*$'
     pattern_without_country = r' прогноз \w+ на \d\s*$'
@@ -106,6 +114,7 @@ def weather_forecast(item):
 def chose(item):
     """
     Выбрать из нескольких вариантов.
+    :param item: сообщение с командой
     """
     vk.choice(item['chat_id'], item['user_id'], item['body'])
 
@@ -113,12 +122,16 @@ def chose(item):
 def send_help(item):
     """
     Отправить справку в чат.
+    :param item: сообщение с командой
     """
     vk.send_ref(item['chat_id'], item['user_id'])
 
 
 def wolfram_img_ans(item):
-    """Отправить фотографию ответа из вольфрамальфа"""
+    """
+    Отправить фотографию ответа из вольфрамальфа.
+    :param item: сообщение с командой
+    """
     question = item['body'][item['body'].index('вольфрам')+8:].lstrip()
     wa_api.get_img_answer(question)
     vk.send_photo(item['chat_id'], item['user_id'], 'img.jpg')
@@ -127,9 +140,10 @@ def wolfram_img_ans(item):
 def translit(item):
     """
     Сменить раскладку сообщения.
+    :param item: сообщение с командой
     """
     mes = "Бот Котя: "
-    alf = "qйwцeуrкtеyнuгiшoщpз[х]ъaфsыdвfаgпhрjоkлlд;ж'эzяxчcсvмbиnтmь,б.ю"
+    alf = "qйwцeуrкtеyнuгiшoщpз[х]ъaфsыdвfаgпhрjоkлlд;ж'эzяxчcсvмbиnтmь,б.ю/."
 
     for ch in item['body'][item['body'].index('транслит')+8:]:
         if ch.lower() in alf:
@@ -147,3 +161,31 @@ def translit(item):
             mes += ch
 
     vk.write_msg_in_chat(item['chat_id'], item['user_id'], mes)
+
+
+def day_of_week(item):
+    """
+    Написать, какой сегодня день недели.
+    :param item: сообщение с командой
+    """
+    if "день недели" not in item['body']:
+        vk.write_msg_in_chat(item['chat_id'], item['user_id'],
+                             'Я не поняль :С')
+        return
+    days = {0: 'понедельник', 1: 'вторник', 2: 'среда', 3: 'четверг',
+            4: 'пятница', 5: 'суббота', 6: 'воскресенье'}
+    current_date = datetime.date.today()
+    day = current_date.weekday()
+    mes = "Сегодня " + days[day] + ' ' + '🙃'
+    vk.write_msg_in_chat(item['chat_id'], item['user_id'], mes)
+
+
+def send_audio_message(item):
+    """
+    Отправить аудио сообщение.
+    :param item: сообщение с командой
+    """
+    ind = item['body'].index('скажи')
+    mes = item['body'][ind + 5:].lstrip()
+    voice.create_ogg_from_text(mes)
+    vk.send_voice_message(item['chat_id'], item['user_id'])

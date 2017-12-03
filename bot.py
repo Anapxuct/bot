@@ -12,7 +12,9 @@ commands = {'привет': say_hello,
             'помощь': send_help,
             'когда': when_it_happend,
             'вольфрам': wolfram_img_ans,
-            'транслит': translit}
+            'транслит': translit,
+            'день': day_of_week,
+            'скажи': send_audio_message}
 
 while True:
     response = vk.get_msgs()
