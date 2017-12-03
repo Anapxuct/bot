@@ -15,4 +15,3 @@ def create_ogg_from_text(text):
         out.write(res.content)
 
 
-create_ogg_from_text('Привет!')
