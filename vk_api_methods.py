@@ -3,11 +3,7 @@ import random
 import requests
 from flask import json
 
-#vk = vk_api.VkApi(token='d255cecd1007c7276bae7e0c1684ec3e3b94a18f778e5bdcfb7f3\
-#8846507a023e0228e937385f0da8f7c5')
-
-vk = vk_api.VkApi(token='672082e4bae39c963d8de9f8b624aa34d732e8456e03298c7657d\
-d8907db3b5599b42f895161905c33cdd')
+#vk = тут должен быть ключ
 vk._auth_token()
 values = {'out': 0, 'count': 20, 'time_offset': 10}
 
