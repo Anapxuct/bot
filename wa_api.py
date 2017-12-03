@@ -1,6 +1,6 @@
 import requests
 
-API_key = 'THTGGX-JRXH63GE3V'
+# API_key = тут должен быть ключ
 
 
 def get_img_answer(question):
