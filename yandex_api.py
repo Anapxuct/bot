@@ -1,7 +1,6 @@
 import requests
 
-key_api = 'trnsl.1.1.20171112T134725Z.a7b47af0b6a94cfa.25a33c332c8c97681c7d8fb\
-423933937f3e4f7b9'
+# key_api = тут должен быть ключ
 
 
 def translate_text(text, lang):
