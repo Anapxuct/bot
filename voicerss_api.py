@@ -1,6 +1,6 @@
 import requests
 
-api_key = 'c5ffb67101384bf19682c19592ac62a9'
+# api_key = тут должен быть ключ
 
 
 def create_ogg_from_text(text):
