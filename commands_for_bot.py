@@ -1,5 +1,7 @@
 from re import search
 import random
+import requests
+import main_lumb as ml
 import vk_api_methods as vk
 import openweathermap_api as weather_api
 import wa_api
@@ -124,7 +126,31 @@ def send_help(item):
     Отправить справку в чат.
     :param item: сообщение с командой
     """
-    vk.send_ref(item['chat_id'], item['user_id'])
+    ref = 'Чтобы обратиться ко мне начни сообщение с "Котя"\n' + \
+          u'\u2713' + 'привет, чтобы поздоровоться со мной\n' + \
+          u'\u2713' + 'кто "любая_фраза" - выбрать пользователя из группы,\
+           который "любая_фраза\n' + \
+          u'\u2713' + 'send "что-либо" - написать что-либо в беседу\n' + \
+          u'\u2713' + 'вероятность "фраза" - вероятность того, что "фраза" -\
+           правда\n' \
+          + u'\u2713' + 'выбор ... или ... или ... - помочь с выбором из любого\
+           кол-ва вариантов\n' + \
+          u'\u2713' + 'погода Название_города - погода в данный момент\n' + \
+          u'\u2713' + 'прогноз Название_города на n - прогноз погоды на n \
+          дней' + '\n' + u'\u2713' + 'когда "событие" - когда произойдет \
+          событие\n' + u'\u2713' + 'вольфрам "запрос" - получить ответ с \
+          wolframalpha\n' + u'\u2713' + 'транслит "сообщение" - изменить \
+          раскладку сообщения\n' + u'\u2713' + 'день недели - узнать, какой \
+          сегодня день недели\n' + u'\u2713' + 'скажи "текст" - произносит \
+          "текст" в голосовом сообщении\n' + u'\u2713' + 'курс - узнать \
+          курс доллара и евро\n' + u'\u2713' + 'что такое - узнать значение \
+          слова\n' + u'\u2713' + 'перевод язык1 язык2 текст - перевести текст \
+          с языка1 на язык2\n' + u'\u2713' + 'запомни текст - запомнить \
+          текст\n' + u'\u2713' + 'напомни - вывести то, что было запомнено \
+          ранее\n' + u'\u2713' + 'музыка "название трека" - ссылка на \
+          скачивание трека\n'
+
+    vk.write_msg_in_chat(item['chat_id'], item['user_id'], ref)
 
 
 def wolfram_img_ans(item):
@@ -132,7 +158,7 @@ def wolfram_img_ans(item):
     Отправить фотографию ответа из вольфрамальфа.
     :param item: сообщение с командой
     """
-    question = item['body'][item['body'].index('вольфрам')+8:].lstrip()
+    question = item['body'][item['body'].index('вольфрам') + 8:].lstrip()
     wa_api.get_img_answer(question)
     vk.send_photo(item['chat_id'], item['user_id'], 'img.jpg')
 
@@ -145,7 +171,7 @@ def translit(item):
     mes = "Бот Котя: "
     alf = "qйwцeуrкtеyнuгiшoщpз[х]ъaфsыdвfаgпhрjоkлlд;ж'эzяxчcсvмbиnтmь,б.ю/."
 
-    for ch in item['body'][item['body'].index('транслит')+8:]:
+    for ch in item['body'][item['body'].index('транслит') + 8:]:
         if ch.lower() in alf:
             if alf.index(ch.lower()) % 2 == 0:
                 if ch.isupper():
@@ -188,4 +214,68 @@ def send_audio_message(item):
     ind = item['body'].index('скажи')
     mes = item['body'][ind + 5:].lstrip()
     voice.create_ogg_from_text(mes)
-    vk.send_voice_message(item['chat_id'], item['user_id'])
+    vk.send_voice_message(item['chat_id'], item['user_id'], 'voice.ogg')
+
+
+def show_exchange_rates(item):
+    """
+    Написать курс евро и доллара США к рублю.
+    :param item: сообщение с командой
+    """
+    try:
+        res = requests.get('https://finance.rambler.ru/currencies/')
+        res = res.text
+        euro = res[res.index('Евро'):]
+        euro = euro[euro.index('span') + 5:euro.index('</span>')]
+        res = res[res.index('Доллар США'):]
+        dollar = res[res.index('span') + 5:res.index('</span>')]
+        msg = "Курс евро: {} руб.\nКурс доллара США: {} руб.".format(euro,
+                                                                     dollar)
+        vk.write_msg_in_chat(item['chat_id'], item['user_id'], msg)
+    except Exception as e:
+        print('Exception(show_exchange_rates):', e)
+        vk.write_msg_in_chat(item['chat_id'], item['user_id'],
+                             'Что-то пошло не так :С')
+
+
+def send_music(item):
+    song_name = item['body'][item['body'].index('музыка') + 6:].lstrip()
+    url = 'http://go.mail.ru/zaycev?sbmt=1512993839750'
+    res = requests.get(url, params={'q': song_name})
+    res = res.text
+    try:
+        res = res[res.index('class="result__snp"'):]
+        url2 = res[res.index('http'):res.index('"><span')]
+        res = requests.get(url2)
+        res = res.text
+        res = res[res.index('audiotrack-button__label'):]
+        url_download = res[res.index('http'):res.index('" id=')]
+        msg = 'Ссылка для скачивания: ' + url_download
+        vk.write_msg_in_chat(item['chat_id'], item['user_id'], msg)
+    except Exception:
+        vk.write_msg_in_chat(item['chat_id'], item['user_id'], 'Не могу найти \
+        такую песню :С')
+        return
+
+
+def wiki_lumb(item):
+    if ml.checkcmdWIKI(item):
+        mes = ml.Wiki(item)
+        vk.write_msg_in_chat(item['chat_id'], item['user_id'], mes)
+
+
+def translate_lumb(item):
+    if ml.checkcmdTRANSLATE(item):
+        mes = ml.Translate(item)
+        vk.write_msg_in_chat(item['chat_id'], item['user_id'], mes)
+
+
+def recall_lumb(item):
+    if ml.checkcmdRECALL(item):
+        mes = ml.Recall(item)
+        vk.write_msg_in_chat(item['chat_id'], item['user_id'], mes)
+
+
+def remember_lumb(item):
+    if ml.checkcmdREMEMBER(item):
+        ml.Remember(item)

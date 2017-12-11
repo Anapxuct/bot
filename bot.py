@@ -14,7 +14,13 @@ commands = {'привет': say_hello,
             'вольфрам': wolfram_img_ans,
             'транслит': translit,
             'день': day_of_week,
-            'скажи': send_audio_message}
+            'скажи': send_audio_message,
+            'курс': show_exchange_rates,
+            'перевод': translate_lumb,
+            'запомни': remember_lumb,
+            'напомни': recall_lumb,
+            'что': wiki_lumb,
+            'музыка': send_music}
 
 while True:
     response = vk.get_msgs()
@@ -23,10 +29,10 @@ while True:
         vk.values['last_message_id'] = response['items'][0]['id']
     # Проверяем наличие команды для бота в каждом сообщении.
     for item in response['items']:
-        if not search(r'^\s*Бот Котя\s*', item['body'])\
+        if not search(r'^\s*Котя\s*', item['body']) \
                 or len(item['body'].split()) < 2:
-            continue
-        command = item['body'].split()[2].lower()
+            break
+        command = item['body'].split()[1].lower()
         if command in commands:
             commands[command](item)
         else:
