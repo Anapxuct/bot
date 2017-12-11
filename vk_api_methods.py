@@ -48,35 +48,6 @@ def chose_user(chat_id):
     return user
 
 
-def send_ref(chat_id, user_id):
-    """
-    Отправляет справку в беседу chat_id или пользователю user_id, если
-    chat_id = 0.
-    :param chat_id: id беседы (0, если сообщение не из беседы)
-    :param user_id: id автора сообщения
-    :return: nothing
-    """
-    ref = 'Чтобы обратиться ко мне начни сообщение с "Бот Котя"\n' + \
-          u'\u2713' + 'привет, чтобы поздоровоться со мной\n' + \
-          u'\u2713' + 'кто "любая_фраза" - выбрать пользователя из группы,\
-           который "любая_фраза\n' + \
-          u'\u2713' + 'send "что-либо" - написать что-либо в беседу\n' + \
-          u'\u2713' + 'вероятность "фраза" - вероятность того, что "фраза" -\
-           правда\n' \
-          + u'\u2713' + 'выбор ... или ... или ... - помочь с выбором из любого\
-           кол-ва вариантов\n' + \
-          u'\u2713' + 'погода Название_города - погода в данный момент\n' + \
-          u'\u2713' + 'прогноз Название_города на n - прогноз погоды на n \
-          дней' + '\n' + u'\u2713' + 'когда "событие" - когда произойдет \
-          событие\n' + u'\u2713' + 'вольфрам "запрос" - получить ответ с \
-          wolframalpha\n' + u'\u2713' + 'транслит "сообщение" - изменить \
-          раскладку сообщения\n' + u'\u2713' + 'день недели - узнать, какой \
-          сегодня день недели\n' + u'\u2713' + 'скажи "текст" - произносит \
-          "текст" в голосовом сообщении'
-
-    write_msg_in_chat(chat_id, user_id, ref)
-
-
 def send_msg(chat_id, user_id, msg):
     """
     Написать заданное сообщение msg в беседу chat_id.
@@ -139,7 +110,7 @@ def send_photo(chat_id, user_id, photo_name):
         write_msg_in_chat(chat_id, user_id, 'Что-то пошло не так :С')
 
 
-def send_voice_message(chat_id, user_id):
+def send_voice_message(chat_id, user_id, name):
     """
     Отправить голосовое сообщение в беседу chat_id или пользователю user_id,
     если chat_id = 0.
@@ -152,7 +123,7 @@ def send_voice_message(chat_id, user_id):
                        {'type': 'audio_message'})
     upload_url = server['upload_url']
     # Загрузка документа на полученный сервер.
-    voice = {'file': ('voice.ogg', open('voice.ogg', 'rb'))}
+    voice = {'file': (name, open(name, 'rb'))}
     response = requests.post(upload_url, files=voice)
     result = json.loads(response.text)
     # Отправка сообщения.
