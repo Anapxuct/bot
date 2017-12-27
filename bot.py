@@ -20,7 +20,8 @@ commands = {'привет': say_hello,
             'запомни': remember_lumb,
             'напомни': recall_lumb,
             'что': wiki_lumb,
-            'музыка': send_music}
+            'музыка': send_music,
+            'текст': voice_to_text}
 
 while True:
     response = vk.get_msgs()
@@ -35,6 +36,10 @@ while True:
         command = item['body'].split()[1].lower()
         if command in commands:
             commands[command](item)
+            if 'чечн' in item['body'].lower():
+                cechnya_kruto(item)
+        elif 'чечн' in item['body'].lower():
+            cechnya_kruto(item)
         else:
             vk.write_msg_in_chat(item['chat_id'], item['user_id'],
                                  'Я не поняль :С')

@@ -7,6 +7,7 @@ import openweathermap_api as weather_api
 import wa_api
 import datetime
 import voicerss_api as voice
+import speech_recognition_api as sprec
 
 
 def when_it_happend(item):
@@ -239,6 +240,10 @@ def show_exchange_rates(item):
 
 
 def send_music(item):
+    """
+    Отправить ссылку на скачивание трека.
+    :param item: сообщение с командой
+    """
     song_name = item['body'][item['body'].index('музыка') + 6:].lstrip()
     url = 'http://go.mail.ru/zaycev?sbmt=1512993839750'
     res = requests.get(url, params={'q': song_name})
@@ -258,24 +263,61 @@ def send_music(item):
         return
 
 
+def cechnya_kruto(item):
+    """Чечня круто!"""
+    msg = 'Чечня круто!'
+    vk.write_msg_in_chat(item['chat_id'], item['user_id'], msg)
+
+
+def voice_to_text(item):
+    """
+    Написать текст, сказанный  в прикрепленном голосовом сообщении.
+    :param item: сообщение с командой
+    """
+    if 'fwd_messages' not in item:
+        vk.write_msg_in_chat(item['chat_id'], item['user_id'],
+                             "Нету пересланного сообщения :с")
+        return
+    url = item['fwd_messages'][0]['attachments'][0]['doc']['preview']\
+        ['audio_msg']['link_mp3']
+    msg = 'Бот Котя: ' + sprec.speech_to_text(url)
+    vk.write_msg_in_chat(item['chat_id'], item['user_id'], msg)
+
+
 def wiki_lumb(item):
+    """
+    Вывести определение из википедии.
+    :param item: сообщение с командой
+    """
     if ml.checkcmdWIKI(item):
         mes = ml.Wiki(item)
         vk.write_msg_in_chat(item['chat_id'], item['user_id'], mes)
 
 
 def translate_lumb(item):
+    """
+    Перевести текст.
+    :param item: сообщение с командой
+    """
     if ml.checkcmdTRANSLATE(item):
         mes = ml.Translate(item)
         vk.write_msg_in_chat(item['chat_id'], item['user_id'], mes)
 
 
 def recall_lumb(item):
+    """
+    Вывести запомненные ранеее сообщения.
+    :param item: сообщение с командой
+    """
     if ml.checkcmdRECALL(item):
         mes = ml.Recall(item)
         vk.write_msg_in_chat(item['chat_id'], item['user_id'], mes)
 
 
 def remember_lumb(item):
+    """
+    Запомнить сообщение
+    :param item: сообщение с командой.
+    """
     if ml.checkcmdREMEMBER(item):
         ml.Remember(item)
