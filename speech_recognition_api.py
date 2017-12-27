@@ -2,7 +2,7 @@ from havenondemand.hodclient import *
 
 client = HODClient("5dd151bb-5a5c-4514-8528-141a46e7cd53", version="v2")
 
-api_key = 'e1a2805e-db2e-431e-bc93-b55aca246795'
+api_key = 'тут должен быть ключ'
 
 
 def speech_to_text(audio_url):
